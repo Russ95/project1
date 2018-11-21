@@ -16,6 +16,7 @@ Read about it online.
 """
 
 import os
+from flask import Flask, flash, redirect, render_template, request, session, abort
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
@@ -36,8 +37,8 @@ app = Flask(__name__, template_folder=tmpl_dir)
 # For your convenience, we already set it to the class database
 
 # Use the DB credentials you received by e-mail
-DB_USER = "zg2305"
-DB_PASSWORD = "by1o5465"
+DB_USER = "tm2977"
+DB_PASSWORD = "574u6jh2"
 
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 
@@ -101,6 +102,34 @@ def teardown_request(exception):
 # see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
+@app.route('/home')
+def home():
+  if not session.get('logged_in'):
+    return render_template('login.html')
+  else:
+    return "Hello Boss!"
+
+
+@app.route('/login', methods=['POST'])
+def do_admin_login():
+  try:
+    if request.form['password'] == 'password' and request.form['username'] == 'admin':
+      session['logged_in'] = True
+    else:
+      flash('wrong password!')
+    return home()
+  except:
+    print()
+
+
+# @app.route('/register', methods=['POST'])
+# def do_register():
+#   if request.form['password'] == 'password' and request.form['username'] == 'admin':
+#     session['logged_in'] = True
+#   else:
+#     flash('wrong password!')
+#   return home()
+
 @app.route('/')
 def index():
   """
@@ -120,10 +149,10 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM test")
+  cursor = g.conn.execute("SELECT user_name FROM User_")
   names = []
   for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
+    names.append(result['user_name'])  # can also be accessed using result[0]
   cursor.close()
 
   #
@@ -179,15 +208,15 @@ def another():
 def add():
   name = request.form['name']
   print (name)
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)'
-  g.conn.execute(text(cmd), name1 = name, name2 = name)
+  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
+  g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
 
 
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
+# @app.route('/login')
+# def login():
+#     abort(401)
+#     this_is_never_executed()
 
 
 if __name__ == "__main__":

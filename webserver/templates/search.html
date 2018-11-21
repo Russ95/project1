@@ -26,28 +26,25 @@
 	      <section>
 	        <h1>Event Menu</h1>
 	        <div id="github-icons"></div>
-              <!--<div> Welcome  {{n}} </div>-->
-              <div>
-                {% for i in range(0,count)%}
-                <div class="card-body">
-					<h1 class="card-title pricing-card-title">{{names[i]}}</h1>
-                  <ul class="list-unstyled mt-3 mb-4">
-                    <li>Likes: {{likes[i]}}</li>
-                    <li>Date: {{event_dates[i]}}</li>
-                    <li>Tag: {{tags[i]}}</li>
-					<!--<form action="/logout">-->
-					<!--</form>
-					<!--<form action="/logout">-->
-					  <form role="form" method="POST" action="{{ url_for('view_event', ID=ids[i])}}">
-                    <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-					  <input type="submit" value="View" />
-					  </form>
-				  </ul>
+                <form action="/search_result" method="POST">
+                    <div class="login">
+                        <div class="login-screen">
+                            <div class="app-title">
+                                <h1>Post Event</h1>
+                            </div>
 
-                </div>
-
-                {% endfor %}
-              </div>
+                            <div class="login-form">
+                                <div class="control-group">
+                                    <!--<span> Event Name: </span>-->
+                                <input type="text" class="login-field" value="" placeholder="event_search" name="event_search">
+                                <label class="login-field-icon fui-user" for="login-name"></label>
+                                </div>
+                                <input type="submit" value="Search" class="btn btn-primary btn-large btn-block" >
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </form>
 	      </section>
 	    </div>
 	  </main>
@@ -112,15 +109,3 @@
 	</script>
 </body>
 </html>
-  <!--<h1>Events: </h1>-->
-  <!--<div> Welcome  {{n}} </div>-->
-  <!--<div>-->
-    <!--{% for n in data %}-->
-    <!--<div>{{n}}</div>-->
-    <!--{% endfor %}-->
-  <!--</div>-->
-
-<!--<form action="/logout">-->
-    <!--<input type="submit" value="Log Out" />-->
-<!--</form>-->
-

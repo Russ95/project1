@@ -16,37 +16,22 @@
 	<div id="wrapper" class="wrapper">
 	  <header class="header htmleaf-header">
 			<h1>Welcome To Cohero </h1>
-			<div class="htmleaf-links">
-				<a class="htmleaf-icon icon-htmleaf-home-outline" href="http://www.htmleaf.com/" title="jQuery之家" target="_blank"></a>
-				<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="http://www.htmleaf.com/html5/html5muban/201508022345.html" title="返回下载页" target="_blank"></a>
-			</div>
+			
 		</header>
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>Event Menu</h1>
+	        <h1>My Profile</h1>
 	        <div id="github-icons"></div>
-              <!--<div> Welcome  {{n}} </div>-->
+              <div> Welcome  {{n1}} ! </div>
               <div>
-                {% for i in range(0,count)%}
                 <div class="card-body">
-					<h1 class="card-title pricing-card-title">{{names[i]}}</h1>
                   <ul class="list-unstyled mt-3 mb-4">
-                    <li>Likes: {{likes[i]}}</li>
-                    <li>Date: {{event_dates[i]}}</li>
-                    <li>Tag: {{tags[i]}}</li>
-					<!--<form action="/logout">-->
-					<!--</form>
-					<!--<form action="/logout">-->
-					  <form role="form" method="POST" action="{{ url_for('view_event', ID=ids[i])}}">
-                    <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-					  <input type="submit" value="View" />
-					  </form>
-				  </ul>
-
+                    <li>Name: {{n1}}</li>
+                    <li>Birthday: {{n2}}</li>
+                    <li>Likes: {{n3}}</li>
+                  </ul>
                 </div>
-
-                {% endfor %}
               </div>
 	      </section>
 	    </div>
@@ -112,15 +97,5 @@
 	</script>
 </body>
 </html>
-  <!--<h1>Events: </h1>-->
-  <!--<div> Welcome  {{n}} </div>-->
-  <!--<div>-->
-    <!--{% for n in data %}-->
-    <!--<div>{{n}}</div>-->
-    <!--{% endfor %}-->
-  <!--</div>-->
 
-<!--<form action="/logout">-->
-    <!--<input type="submit" value="Log Out" />-->
-<!--</form>-->
 

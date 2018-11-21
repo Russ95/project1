@@ -24,30 +24,18 @@
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>Event Menu</h1>
+	        <h1>View Event: </h1>
 	        <div id="github-icons"></div>
               <!--<div> Welcome  {{n}} </div>-->
-              <div>
-                {% for i in range(0,count)%}
                 <div class="card-body">
-					<h1 class="card-title pricing-card-title">{{names[i]}}</h1>
+					<h1 class="card-title pricing-card-title">{{events[0][0]}}</h1>
                   <ul class="list-unstyled mt-3 mb-4">
-                    <li>Likes: {{likes[i]}}</li>
-                    <li>Date: {{event_dates[i]}}</li>
-                    <li>Tag: {{tags[i]}}</li>
-					<!--<form action="/logout">-->
-					<!--</form>
-					<!--<form action="/logout">-->
-					  <form role="form" method="POST" action="{{ url_for('view_event', ID=ids[i])}}">
-                    <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-					  <input type="submit" value="View" />
-					  </form>
+                    <li>Likes: {{events[0][1]}}</li>
+                    <li>Tag {{events[0][2]}}</li>
+                    <li>Date: {{events[0][3]}}</li>
+                    <li>Location: {{events[0][4]}}</li>
 				  </ul>
-
                 </div>
-
-                {% endfor %}
-              </div>
 	      </section>
 	    </div>
 	  </main>
@@ -112,15 +100,3 @@
 	</script>
 </body>
 </html>
-  <!--<h1>Events: </h1>-->
-  <!--<div> Welcome  {{n}} </div>-->
-  <!--<div>-->
-    <!--{% for n in data %}-->
-    <!--<div>{{n}}</div>-->
-    <!--{% endfor %}-->
-  <!--</div>-->
-
-<!--<form action="/logout">-->
-    <!--<input type="submit" value="Log Out" />-->
-<!--</form>-->
-

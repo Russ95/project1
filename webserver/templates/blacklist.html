@@ -24,11 +24,11 @@
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>Search Results:</h1>
+	        <h1>BlackList</h1>
 	        <div id="github-icons"></div>
               <!--<div> Welcome  {{n}} </div>-->
               <div>
-                {% for i in range(0,count)%}
+                {% for i in range(0,ncount)%}
                 <!--<div class="card-body">-->
                   <!--<h1 class="card-title pricing-card-title">{{n}}<small class="text-muted">/ mo</small></h1>-->
                   <!--<ul class="list-unstyled mt-3 mb-4">-->
@@ -40,16 +40,12 @@
                   <!--<button type="button" class="btn btn-lg btn-block btn-primary">View</button>-->
                 <!--</div>-->
                 <div class="card-body">
-                    <h1 class="card-title pricing-card-title">{{events[i][0]}}</h1>
+                  <!-- <h1 class="card-title pricing-card-title">{{i}} -->
                   <ul class="list-unstyled mt-3 mb-4">
-                    <li>Likes: {{events[i][1]}}</li>
-                    <li>Tag: {{events[i][2]}}</li>
-                    <li>Description: {{events[i][3]}}</li>
-                    <li>Location: {{events[i][4]}}</li>
-					  <form role="form" method="POST" action="{{ url_for('view_event', ID=events[i][5])}}">
-                    <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-					  <input type="submit" value="View" />
-					  </form>
+                    <li>Friend_uid: {{nn11[i]}}</li>
+                    <li>Friend_name: {{nn22[i]}}</li>
+                    <li>likes of this friend: {{nn33[i]}}</li>
+                    <!-- <button type="button" class="btn btn-lg btn-block btn-primary">View</button> -->
                   </ul>
 
                 </div>
@@ -120,3 +116,15 @@
 	</script>
 </body>
 </html>
+  <!--<h1>Events: </h1>-->
+  <!--<div> Welcome  {{n}} </div>-->
+  <!--<div>-->
+    <!--{% for n in data %}-->
+    <!--<div>{{n}}</div>-->
+    <!--{% endfor %}-->
+  <!--</div>-->
+
+<!--<form action="/logout">-->
+    <!--<input type="submit" value="Log Out" />-->
+<!--</form>-->
+

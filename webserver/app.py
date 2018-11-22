@@ -179,7 +179,8 @@ def do_register():
 @app.route('/post',methods=['GET'])
 @flask_login.login_required
 def post():
-    return render_template('post.html')
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template('post.html',**user_id_dic)
 
 @app.route('/do_post',methods=['GET', 'POST'])
 @flask_login.login_required
@@ -237,17 +238,17 @@ def profile():
         birthday=result['birthday']   
         likes=result['likes']
     cursor.close()
-
+    user_id_dic = dict(n = flask_login.current_user.id)
     user_name_dic = dict(n1 = user_name)
     birthday_dic=dict(n2=birthday)
     likes_dic = dict(n3=likes)
-    return render_template('profile.html', **user_name_dic, **birthday_dic,**likes_dic)
+    return render_template('profile.html', **user_id_dic,**user_name_dic, **birthday_dic,**likes_dic)
 
 
 @app.route('/friends', methods=['GET','POST'])
 @flask_login.login_required
 def friends():
-    t = {"U_Name1": flask_login.current_user.id}
+    t = {"U_Name2": flask_login.current_user.id}
     cursor = g.conn.execute(
         """
             select uid,user_name,likes
@@ -282,22 +283,100 @@ def friends():
     cursor = g.conn.execute("SELECT count(*) FROM (select fid from Friends_Relation where uid in (select uid from User_ where user_name=%s)) as foo",flask_login.current_user.id)
     a = cursor.fetchone()
     count = a[0]
-
+    user_id_dic = dict(n = flask_login.current_user.id)
     count_dic = dict(count = count)
     tmpuid_dic = dict(n11 = tmpuid)
     tmpusername_dic=dict(n22=tmpusername)
     tmplikes_dic = dict(n33=tmplikes)
-    return render_template('friends.html', **count_dic,**tmpuid_dic, **tmpusername_dic,**tmplikes_dic)
+    return render_template('friends.html', **user_id_dic,**count_dic,**tmpuid_dic, **tmpusername_dic,**tmplikes_dic)
     # return render_template('friends.html', **count_dic,**tmpuid_dic, **tmpusername_dic,**tmplikes_dic)
 
 
+
+@app.route('/blacklist', methods=['GET','POST'])
+@flask_login.login_required
+def blacklist():
+    t = {"U_Name1": flask_login.current_user.id}
+    cursor = g.conn.execute(
+        """
+            select uid,user_name,likes
+            from User_
+            where uid in (
+            select bid 
+            from Blacklist_Relation
+            where uid in (select uid
+            from User_
+            where user_name=%s))
+        """,flask_login.current_user.id)
+
+    
+    blackuid = []
+    blackusername = []
+    blacklikes=[]
+    for result in cursor:
+        blackuid.append(result['uid'])  # can also be accessed using result[0]
+        blackusername.append(result['user_name'])   
+        blacklikes.append(result['likes'])
+
+    cursor.close()
+
+    cursor = g.conn.execute("SELECT count(*) FROM (select bid from blacklist_Relation where uid in (select uid from User_ where user_name=%s)) as foo",flask_login.current_user.id)
+    a = cursor.fetchone()
+    count = a[0]
+    user_id_dic = dict(n = flask_login.current_user.id)
+    black_count_dic = dict(ncount = count)
+    blackuid_dic = dict(nn11 = blackuid)
+    blackusername_dic=dict(nn22=blackusername)
+    blacklikes_dic = dict(nn33=blacklikes)
+    return render_template('blacklist.html', **user_id_dic,**black_count_dic,**blackuid_dic, **blackusername_dic,**blacklikes_dic)
+
+
+
+@app.route('/interest', methods=['GET','POST'])
+@flask_login.login_required
+def interest():
+    cursor = g.conn.execute(
+        """
+            select name,interest_description
+            from Interest
+            where name in(
+            select name
+            from Owns
+            where uid in(
+            select uid from User_
+            where user_name=%s))
+        """,flask_login.current_user.id)
+
+    
+    i_name = []
+    i_description = []
+    for result in cursor:
+        i_name.append(result['name'])  # can also be accessed using result[0]
+        i_description.append(result['interest_description'])   
+
+    cursor.close()
+
+    cursor = g.conn.execute(
+        """SELECT count(*) FROM (select name
+            from Owns
+            where uid in(
+            select uid from User_
+            where user_name=%s)) as foo""",flask_login.current_user.id)
+    a = cursor.fetchone()
+    count = a[0]
+    user_id_dic = dict(n = flask_login.current_user.id)
+    icount_dic = dict(icount = count)
+    i_name_dic = dict(nnn11 = i_name)
+    i_description_dic=dict(nnn22=i_description)
+    return render_template('interests.html', **user_id_dic,**icount_dic,**i_name_dic, **i_description_dic)
 
 
 
 @app.route('/search',methods=['GET', 'POST'])
 @flask_login.login_required
 def search():
-    return render_template("search.html")
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template("search.html",**user_id_dic)
 
 
 @app.route('/search_result',methods=['GET', 'POST'])
@@ -335,7 +414,8 @@ def search_result():
     tmp = cursor2.fetchone()
     count = tmp[0]
     count_dic = dict(count = count)
-    return render_template("search_result.html", **events_dic, **count_dic)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template("search_result.html", **user_id_dic,**events_dic, **count_dic)
 
 
 @app.route('/createUser', methods=['GET', 'POST'])
@@ -373,7 +453,8 @@ def view_event(ID):
         row.append(result['address'])
         results.append(row)
     events_dic = dict(events = results)
-    return render_template('event_view.html', **events_dic)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template('event_view.html', **user_id_dic,**events_dic)
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)

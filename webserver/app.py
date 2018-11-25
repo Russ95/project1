@@ -293,6 +293,94 @@ def friends():
 
 
 
+#friend_result
+@app.route('/friend_result',methods=['GET', 'POST'])
+@flask_login.login_required
+def friend_result():
+    results = []
+    t = {"friend_search": request.form['friend_search']}
+
+    cursor1 = g.conn.execute(text(
+        """
+            select uid,user_name,birthday,likes
+            from User_
+            where user_name = :friend_search 
+        """
+    ),t)
+    for result in cursor1:
+        row = []
+        row.append(result['uid'])
+        row.append(result['user_name'])
+        row.append(result['birthday'])
+        row.append(result['likes'])
+        results.append(row)
+    friends_dic = dict(friends = results)
+
+
+
+    cursor2 = g.conn.execute(text(
+        """
+            select count(*) from User_
+            where user_name = :friend_search 
+        """
+    ),t)
+    tmp = cursor2.fetchone()
+    count = tmp[0]
+    count_dic = dict(count = count)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template("search_friend_result.html", **user_id_dic,**friends_dic, **count_dic)
+
+#above are friend_results
+
+#below are add friends
+@app.route('/add_friend/<ID>',methods=['GET', 'POST'])
+@flask_login.login_required
+def add_friend(ID):
+
+    t1 = {"U_Name": flask_login.current_user.id}
+
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    event = cursor.fetchone()
+    uid = event[0]
+
+    t3 = {"friend_name": ID}
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:friend_name
+        """
+    ),t3)
+    event = cursor.fetchone()
+    fid = event[0]
+
+    t2 = {"friend_name": fid, "U_Name": uid}
+
+    cursor = g.conn.execute(text(
+        """
+            insert into Friends_Relation(uid,fid)
+            values
+            (:U_Name,:friend_name)
+        """
+    ),t2)
+
+
+    return friends()
+
+
+#above are add friends
+
+
+
+
+
+
 @app.route('/blacklist', methods=['GET','POST'])
 @flask_login.login_required
 def blacklist():
@@ -330,6 +418,89 @@ def blacklist():
     blacklikes_dic = dict(nn33=blacklikes)
     return render_template('blacklist.html', **user_id_dic,**black_count_dic,**blackuid_dic, **blackusername_dic,**blacklikes_dic)
 
+
+#blacklist_result
+@app.route('/blacklist_result',methods=['GET', 'POST'])
+@flask_login.login_required
+def blacklist_result():
+    results = []
+    t = {"blacklist_search": request.form['blacklist_search']}
+
+    cursor1 = g.conn.execute(text(
+        """
+            select uid,user_name,birthday,likes
+            from User_
+            where user_name = :blacklist_search 
+        """
+    ),t)
+    for result in cursor1:
+        row = []
+        row.append(result['uid'])
+        row.append(result['user_name'])
+        row.append(result['birthday'])
+        row.append(result['likes'])
+        results.append(row)
+    blacklist_dic = dict(blacklist = results)
+
+
+
+    cursor2 = g.conn.execute(text(
+        """
+            select count(*) from User_
+            where user_name = :blacklist_search 
+        """
+    ),t)
+    tmp = cursor2.fetchone()
+    count = tmp[0]
+    count_dic = dict(count = count)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template("search_blacklist_result.html", **user_id_dic,**blacklist_dic, **count_dic)
+
+#above are blacklist_results
+
+#below are add blacklist
+@app.route('/add_blacklist/<ID>',methods=['GET', 'POST'])
+@flask_login.login_required
+def add_blacklist(ID):
+
+    t1 = {"U_Name": flask_login.current_user.id}
+
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    event = cursor.fetchone()
+    uid = event[0]
+
+    t3 = {"blacklist_name": ID}
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:blacklist_name
+        """
+    ),t3)
+    event = cursor.fetchone()
+    bid = event[0]
+
+    t2 = {"blacklist_name": bid, "U_Name": uid}
+
+    cursor = g.conn.execute(text(
+        """
+            insert into Blacklist_Relation(uid,bid)
+            values
+            (:U_Name,:blacklist_name)
+        """
+    ),t2)
+
+
+    return blacklist()
+
+
+#above are add blacklist
 
 
 @app.route('/interest', methods=['GET','POST'])
@@ -370,7 +541,76 @@ def interest():
     i_description_dic=dict(nnn22=i_description)
     return render_template('interests.html', **user_id_dic,**icount_dic,**i_name_dic, **i_description_dic)
 
+#interest_result
+@app.route('/interest_result',methods=['GET', 'POST'])
+@flask_login.login_required
+def interest_result():
+    results = []
+    t = {"interest_search": request.form['interest_search']}
 
+    cursor1 = g.conn.execute(text(
+        """
+            select name, interest_description
+            from Interest
+            where name = :interest_search 
+        """
+    ),t)
+    for result in cursor1:
+        row = []
+        row.append(result['name'])
+        row.append(result['interest_description'])
+        results.append(row)
+    interests_dic = dict(interests = results)
+
+
+
+    cursor2 = g.conn.execute(text(
+        """
+            select count(*) from Interest
+            where name = :interest_search 
+        """
+    ),t)
+    tmp = cursor2.fetchone()
+    count = tmp[0]
+    count_dic = dict(count = count)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    return render_template("search_interest_result.html", **user_id_dic,**interests_dic, **count_dic)
+
+#above are interest_results
+
+#below are add interest
+@app.route('/add_interest/<ID>',methods=['GET', 'POST'])
+@flask_login.login_required
+def add_interest(ID):
+
+    t1 = {"U_Name": flask_login.current_user.id}
+
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    event = cursor.fetchone()
+    uid = event[0]
+
+
+    t2 = {"interest_name": ID, "U_Name": uid}
+
+    cursor = g.conn.execute(text(
+        """
+            insert into Owns(name,uid)
+            values
+            (:interest_name,:U_Name)
+        """
+    ),t2)
+
+
+    return interest()
+
+
+#above are add interest
 
 @app.route('/search',methods=['GET', 'POST'])
 @flask_login.login_required

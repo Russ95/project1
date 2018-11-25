@@ -24,7 +24,7 @@
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>Friends List</h1>
+	        <h1>Search Results:</h1>
 	        <div id="github-icons"></div>
               <!--<div> Welcome  {{n}} </div>-->
               <div>
@@ -40,43 +40,21 @@
                   <!--<button type="button" class="btn btn-lg btn-block btn-primary">View</button>-->
                 <!--</div>-->
                 <div class="card-body">
-                  <!-- <h1 class="card-title pricing-card-title">{{i}} -->
+                    <h1 class="card-title pricing-card-title">{{blacklist[i][1]}}</h1>
                   <ul class="list-unstyled mt-3 mb-4">
-                    <li>Friend_uid: {{n11[i]}}</li>
-                    <li>Friend_name: {{n22[i]}}</li>
-                    <li>likes of this friend: {{n33[i]}}</li>
-                    <!-- <button type="button" class="btn btn-lg btn-block btn-primary">View</button> -->
+                    <li>Uid: {{blacklist[i][0]}}</li>
+                    <li>Birthday: {{blacklist[i][2]}}</li>
+                    <li>Likes: {{blacklist[i][3]}}</li>
+                    <form role="form" method="POST" action="{{ url_for('add_blacklist', ID=blacklist[i][1])}}">
+                        <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
+                          <input type="submit" value="Add To My blacklist" />
+                          </form>
                   </ul>
 
                 </div>
 
                 {% endfor %}
-							</div>
-							
-<!-- below are new try -->
-					<h2>New friends Search</h2>
-					<div id="github-icons"></div>
-								<form action="/friend_result" method="POST">
-										<div class="login">
-												<div class="login-screen">
-														<div class="app-title">
-																<h1>Please Type In Your New Friend's Name here:</h1>
-														</div>
-
-														<div class="login-form">
-																<div class="control-group">
-																		<!--<span> Event Name: </span>-->
-																<input type="text" class="login-field" value="" placeholder="newfriend_search" name="friend_search">
-																<label class="login-field-icon fui-user" for="login-name"></label>
-																</div>
-																<input type="submit" value="Search" class="btn btn-primary btn-large btn-block" >
-																<br>
-														</div>
-												</div>
-										</div>
-								</form>
-
-	<!-- above are new try -->
+              </div>
 	      </section>
 	    </div>
 	  </main>
@@ -141,15 +119,3 @@
 	</script>
 </body>
 </html>
-  <!--<h1>Events: </h1>-->
-  <!--<div> Welcome  {{n}} </div>-->
-  <!--<div>-->
-    <!--{% for n in data %}-->
-    <!--<div>{{n}}</div>-->
-    <!--{% endfor %}-->
-  <!--</div>-->
-
-<!--<form action="/logout">-->
-    <!--<input type="submit" value="Log Out" />-->
-<!--</form>-->
-

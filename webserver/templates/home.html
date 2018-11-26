@@ -35,9 +35,6 @@
                     <li>Likes: {{likes[i]}}</li>
                     <li>Date: {{event_dates[i]}}</li>
                     <li>Tag: {{tags[i]}}</li>
-					<!--<form action="/logout">-->
-					<!--</form>
-					<!--<form action="/logout">-->
 					  <form role="form" method="POST" action="{{ url_for('view_event', ID=ids[i])}}">
                     <!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
 					  <input type="submit" value="View" />

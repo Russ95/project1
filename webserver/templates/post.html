@@ -24,7 +24,7 @@
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>Event Menu</h1>
+	        <!-- <h1>Event Menu</h1> -->
 	        <div id="github-icons"></div>
                 <form action="/do_post" method="POST">
                     <div class="login">
@@ -42,7 +42,7 @@
 
                                 <div class="control-group">
                                     <span> Event Date: </span>
-                                <input type="text" class="login-field" value="" placeholder="eventdate" name="eventdate">
+                                <input type="text" class="login-field" value="" placeholder="YYYY-MM-DD" name="eventdate">
                                 <label class="login-field-icon fui-user" for="login-name"></label>
                                 </div>
                                 <div class="control-group">
@@ -59,7 +59,12 @@
                                     <span> Tag: </span>
                                 <input type="text" class="login-field" value="" placeholder="tag" name="tag">
                                 <label class="login-field-icon fui-user" for="login-name"></label>
-                                </div>
+																</div>
+																<div class="control-group">
+																	<span> Type in one of your friend you want to invite: </span>
+															<input type="text" class="login-field" value="" placeholder="friend's name" name="friend_name">
+															<label class="login-field-icon fui-user" for="login-name"></label>
+															</div>
                                 <input type="submit" value="Post" class="btn btn-primary btn-large btn-block" >
                                 <br>
                             </div>

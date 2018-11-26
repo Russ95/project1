@@ -194,15 +194,63 @@ def do_post():
         """
     ),t1)
 
+    t1 = {"U_Name": flask_login.current_user.id}
+
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    poster_name = cursor.fetchone()
+    uid = poster_name[0]
+
     cursor = g.conn.execute(
     """
     select max(eid) from Event
     
     """)
 
-
     event = cursor.fetchone()
     eid = event[0]
+
+    t3={"uid":uid,"eid":eid}
+    g.conn.execute(text(
+        """
+            insert into  Creates(uid,eid)
+            values
+            (:uid, :eid)
+        """
+    ),t3)
+
+    g.conn.execute(text(
+        """
+            insert into  Attends(uid,eid)
+            values
+            (:uid, :eid)
+        """
+    ),t3)
+
+    t4={"fid":request.form['friend_name']}
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:fid
+        """
+    ),t4)
+    invite_name = cursor.fetchone()
+    iid = invite_name[0]
+    t5={"iid":iid,"eid":eid}
+    g.conn.execute(text(
+        """
+            insert into  Attends(uid,eid)
+            values
+            (:iid, :eid)
+        """
+    ),t5)
+
 
     t2 = {"eid": eid, "location": request.form['location']}
     g.conn.execute(text(
@@ -694,7 +742,161 @@ def view_event(ID):
         results.append(row)
     events_dic = dict(events = results)
     user_id_dic = dict(n = flask_login.current_user.id)
-    return render_template('event_view.html', **user_id_dic,**events_dic)
+
+    cursor = g.conn.execute(text(
+        """
+            select user_name
+            from User_
+            where uid in
+            (select uid
+            from Creates
+            where eid=:event_id)
+        """
+    ),t)
+    a = cursor.fetchone()
+    count = a[0]
+
+    count_dic = dict(count = count)
+
+    cursor=g.conn.execute(text(
+        """
+            select user_name
+            from User_
+            where uid in
+            (select uid
+            from Attends
+            where eid=:event_id)
+        """
+    ),t)
+    names = []
+    for result in cursor:
+        names.append(result['user_name']) 
+    names_dic=dict(names=names)
+
+    id_dic = dict(ID = ID)
+    cursor = g.conn.execute("SELECT count(*) FROM (select user_name from User_ where uid in (select uid from Attends where eid=%s)) as foo",ID)
+    count_attend = cursor.fetchone()
+    attend_number = count_attend[0]
+    attend_number_dic=dict(attend_number=attend_number)
+    user_id_dic = dict(n = flask_login.current_user.id)
+    count_dic = dict(count = count)
+    
+
+    return render_template('event_view.html', **user_id_dic,**events_dic,**count_dic,**names_dic,**attend_number_dic,**id_dic)
+
+
+
+
+@app.route('/attend_event/<ID>',methods=['POST'])
+@flask_login.login_required
+def attend_event(ID):
+    ID=ID
+    t1 = {"U_Name": flask_login.current_user.id}
+
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    poster_name = cursor.fetchone()
+    uid = poster_name[0]
+    t = {"uid":uid,"event_id":ID}
+    g.conn.execute(text(
+        """
+            insert into Attends(uid,eid)
+            values(:uid,:event_id)
+            
+        """
+    ),t)
+
+    return view_event(ID)
+
+@app.route('/event_comment/<ID>',methods=['POST'])
+@flask_login.login_required
+def event_comment(ID):
+    t = {"event_id":ID}
+    cursor = g.conn.execute(text(
+        """
+            select user_name,comment_time,content
+            from User_ natural join Event_Comment
+            where eid=:event_id
+        """
+    ),t)
+    results=[]
+    for result in cursor:
+        row = []
+        row.append(result['comment_time'])
+        row.append(result['user_name'])
+        row.append(result['content'])
+        results.append(row)
+    comments_dic = dict(comments = results)
+
+    cursor2 = g.conn.execute(text(
+        """
+            select count(*) from 
+            (select user_name,comment_time,content
+            from User_ natural join Event_Comment
+            where eid=:event_id) as foo 
+        """
+    ),t)
+    tmp = cursor2.fetchone()
+    count = tmp[0]
+    count_dic = dict(count = count)
+
+    cursor = g.conn.execute(text(
+        """
+            select event_name from 
+            Event
+            where eid=:event_id
+        """
+    ),t)
+    a=cursor.fetchone()
+    eventname = a[0]
+    ename_dic=dict(eventname=eventname)
+    eventid_dic=dict(ID=ID)
+
+    return render_template('event_comment.html', **comments_dic,**count_dic,**ename_dic,**eventid_dic)
+
+@app.route('/add_comment/<ID>',methods=['POST'])
+@flask_login.login_required
+def add_comment(ID):
+    t1 = {"U_Name": flask_login.current_user.id}
+    cursor = g.conn.execute(text(
+        """
+            select uid
+            from User_
+            where user_name=:U_Name
+        """
+    ),t1)
+    poster_name = cursor.fetchone()
+    uid = poster_name[0]
+
+    # t2={"eid":ID}
+    # cursor = g.conn.execute(text(
+    #     """
+    #         select event_name
+    #         from Event
+    #         where eid=:eid
+    #     """
+    # ),t2)
+    # eventname=cursor.fetchone()
+    # ename = eventname[0]
+
+    t3={"uid":uid,"eid":ID,"comment":request.form['comment']}
+    g.conn.execute(text(
+        """
+            insert into Event_Comment
+            (comment_time,uid,eid,content)
+            values
+            (CURRENT_TIMESTAMP,:uid,:eid,:comment)
+        """
+    ),t3)
+
+
+    return event_comment(ID)
+
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)

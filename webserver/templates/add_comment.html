@@ -24,42 +24,28 @@
 	  <main>
 	    <div class="container">
 	      <section>
-	        <h1>View Event: </h1>
+	        <!-- <h1>Event Menu</h1> -->
 	        <div id="github-icons"></div>
-              <!--<div> Welcome  {{n}} </div>-->
-                <div class="card-body">
-					<h1 class="card-title pricing-card-title">{{events[0][0]}}</h1>
-                  <ul class="list-unstyled mt-3 mb-4">
-                    <li>Likes: {{events[0][1]}}</li>
-                    <li>Tag {{events[0][2]}}</li>
-                    <li>Date: {{events[0][3]}}</li>
-										<li>Location: {{events[0][4]}}</li>
-										<li>Poster Name: {{count}}</li>
-										<!-- <li>Members who attended/will attend this Event: {{count1}}</li> -->
-										<li>Members who attended/will attend this Event:</li>
-											<!-- <div id="github-icons"></div> -->
-													<!--<div> Welcome  {{n}} </div>-->
-													<!-- <div> -->
-														{% for i in range(0,attend_number)%}
-																<li>Participant: {{names[i]}}</li>
-											<!-- </ul> -->
+                <form action="/add_comment" method="POST">
+                    <div class="login">
+                        <div class="login-screen">
+                            <div class="app-title">
+                                <h1>Comment on Event</h1>
+                            </div>
 
-														<!-- </div> -->
+                            <div class="login-form">
+                                <div class="control-group">
+                                    <span> Type in Your Comment here: </span>
+                                <input type="text" class="login-field" value="" placeholder="eventcomment" name="event_comment">
+                                <label class="login-field-icon fui-user" for="login-name"></label>
+                                </div>
 
-														{% endfor %}
-													</div>
-													<form role="form" method="POST" action="{{ url_for('attend_event', ID=ID)}}">
-											<!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-							<input type="submit" value="Attend this Event Now!" class="btn btn-primary btn-large btn-block"/>
-							</form>
-					
-							<form role="form" method="POST" action="{{ url_for('event_comment', ID=ID)}}">
-								<!--<button type="submit" class="btn btn-lg btn-block btn-primary" formmethod = "POST" formaction = "{{ url_for('view_event', ID=1) }}">View</button>-->
-				<input type="submit" value="View comments of this event!" class="btn btn-primary btn-large btn-block"/>
-				</form>
-					
-					</ul>
-                </div>
+                                <input type="submit" value="finish!" class="btn btn-primary btn-large btn-block" >
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </form>
 	      </section>
 	    </div>
 	  </main>

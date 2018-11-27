@@ -185,82 +185,136 @@ def post():
 @app.route('/do_post',methods=['GET', 'POST'])
 @flask_login.login_required
 def do_post():
-    t1 = {"event_name": request.form['eventname'],"event_date" : request.form['eventdate'], "description" : request.form['description'], "tag": request.form['tag']}
-    cursor = g.conn.execute(text(
-        """
-            insert into  Event(event_name, event_date, description,tag)
-            values
-            (:event_name, :event_date, :description, :tag)
-        """
-    ),t1)
-
-    t1 = {"U_Name": flask_login.current_user.id}
-
-    cursor = g.conn.execute(text(
-        """
-            select uid
-            from User_
-            where user_name=:U_Name
-        """
-    ),t1)
-    poster_name = cursor.fetchone()
-    uid = poster_name[0]
-
-    cursor = g.conn.execute(
-    """
-    select max(eid) from Event
+    a=request.form['eventdate']
+    res=0
+    if len(a)<10:
+        res=2
+    elif a[4]=='-' and a[7]=='-':
+        t=a.split('-')
+        if len(t[0])==4 and len(t[1])==2 and len(t[2])==2:
+            for value in t:
+                try:
+                    val = int(value)
+                    res=1
+                except ValueError:
+                    res=2
+        else:
+            res=2
+    else:
+        res=2
+    if res==2:
+        return render_template('date_wrong.html')
     
-    """)
+    elif res==1:
 
-    event = cursor.fetchone()
-    eid = event[0]
+        t1 = {"event_name": request.form['eventname'],"event_date" : request.form['eventdate'], "description" : request.form['description'], "tag": request.form['tag']}
+        cursor = g.conn.execute(text(
+            """
+                insert into  Event(event_name, event_date, description,tag)
+                values
+                (:event_name, :event_date, :description, :tag)
+            """
+        ),t1)
 
-    t3={"uid":uid,"eid":eid}
-    g.conn.execute(text(
-        """
-            insert into  Creates(uid,eid)
-            values
-            (:uid, :eid)
-        """
-    ),t3)
+        t1 = {"U_Name": flask_login.current_user.id}
 
-    g.conn.execute(text(
-        """
-            insert into  Attends(uid,eid)
-            values
-            (:uid, :eid)
-        """
-    ),t3)
+        cursor = g.conn.execute(text(
+            """
+                select uid
+                from User_
+                where user_name=:U_Name
+            """
+        ),t1)
+        poster_name = cursor.fetchone()
+        uid = poster_name[0]
 
-    t4={"fid":request.form['friend_name']}
-    cursor = g.conn.execute(text(
+        cursor = g.conn.execute(
         """
-            select uid
-            from User_
-            where user_name=:fid
-        """
-    ),t4)
-    invite_name = cursor.fetchone()
-    iid = invite_name[0]
-    t5={"iid":iid,"eid":eid}
-    g.conn.execute(text(
-        """
-            insert into  Attends(uid,eid)
-            values
-            (:iid, :eid)
-        """
-    ),t5)
+        select max(eid) from Event
+        
+        """)
+
+        event = cursor.fetchone()
+        eid = event[0]
+
+        t3={"uid":uid,"eid":eid}
+        g.conn.execute(text(
+            """
+                insert into  Creates(uid,eid)
+                values
+                (:uid, :eid)
+            """
+        ),t3)
+
+        g.conn.execute(text(
+            """
+                insert into  Attends(uid,eid)
+                values
+                (:uid, :eid)
+            """
+        ),t3)
 
 
-    t2 = {"eid": eid, "location": request.form['location']}
-    g.conn.execute(text(
-        """
-            insert into  Take_Places(eid, address)
-            values
-            (:eid, :location)
-        """
-    ),t2)
-    return home()
+        #加判断，iid是否已经在自己的好友列表中
+        t7 = {"fid":request.form['friend_name']}
+        cursor = g.conn.execute(text(
+            """
+                select uid
+                from User_
+                where user_name=:fid
+            """
+        ),t7)
+        invite_name = cursor.fetchone()
+        if invite_name is None:
+            return render_template('not_friend.html')
+        else:
+            iid = invite_name[0]
+            t8={"uid":uid}
+            cursor=g.conn.execute(text(
+                """
+                    select fid
+                    from Friends_Relation
+                    where uid=:uid
+                    
+                """
+            ),t8)
+            names = []
+            for result in cursor:
+                names.append(result['fid']) 
+            if iid not in names:
+                return render_template('not_friend.html')
+
+    #以上为判断
+            else:
+                t4={"fid":request.form['friend_name']}
+                cursor = g.conn.execute(text(
+                    """
+                        select uid
+                        from User_
+                        where user_name=:fid
+                    """
+                ),t4)
+                invite_name = cursor.fetchone()
+                iid = invite_name[0]
+                t5={"iid":iid,"eid":eid}
+                g.conn.execute(text(
+                    """
+                        insert into  Attends(uid,eid)
+                        values
+                        (:iid, :eid)
+                    """
+                ),t5)
+
+
+                t2 = {"eid": eid, "location": request.form['location']}
+                g.conn.execute(text(
+                    """
+                        insert into  Take_Places(eid, address)
+                        values
+                        (:eid, :location)
+                    """
+                ),t2)
+                return home()
 
 @app.route('/profile', methods=['GET','POST'])
 @flask_login.login_required
@@ -408,18 +462,36 @@ def add_friend(ID):
     event = cursor.fetchone()
     fid = event[0]
 
-    t2 = {"friend_name": fid, "U_Name": uid}
-
-    cursor = g.conn.execute(text(
+    #加判断，fid是否已经在friend list中了
+    t7 = {"my_id":uid}
+    cursor=g.conn.execute(text(
         """
-            insert into Friends_Relation(uid,fid)
-            values
-            (:U_Name,:friend_name)
+            select fid
+            from Friends_Relation
+            where uid=:my_id
+            
         """
-    ),t2)
+    ),t7)
+    names = []
+    for result in cursor:
+        names.append(result['fid']) 
+    if fid in names:
+        return render_template('already_friend.html')
+
+    else:
+
+        t2 = {"friend_name": fid, "U_Name": uid}
+
+        cursor = g.conn.execute(text(
+            """
+                insert into Friends_Relation(uid,fid)
+                values
+                (:U_Name,:friend_name)
+            """
+        ),t2)
 
 
-    return friends()
+        return friends()
 
 
 #above are add friends
@@ -534,18 +606,40 @@ def add_blacklist(ID):
     event = cursor.fetchone()
     bid = event[0]
 
-    t2 = {"blacklist_name": bid, "U_Name": uid}
-
-    cursor = g.conn.execute(text(
+    #加判断，fid是否已经在friend list中了
+    t8 = {"my_id":uid}
+    cursor=g.conn.execute(text(
         """
-            insert into Blacklist_Relation(uid,bid)
-            values
-            (:U_Name,:blacklist_name)
+            select bid
+            from Blacklist_Relation
+            where uid=:my_id
+            
         """
-    ),t2)
+    ),t8)
+    names = []
+    for result in cursor:
+        names.append(result['bid']) 
+    if bid in names:
+        return render_template('already_blacklist.html')
+
+    else:
 
 
-    return blacklist()
+
+
+
+        t2 = {"blacklist_name": bid, "U_Name": uid}
+
+        cursor = g.conn.execute(text(
+            """
+                insert into Blacklist_Relation(uid,bid)
+                values
+                (:U_Name,:blacklist_name)
+            """
+        ),t2)
+
+
+        return blacklist()
 
 
 #above are add blacklist
@@ -802,16 +896,33 @@ def attend_event(ID):
     ),t1)
     poster_name = cursor.fetchone()
     uid = poster_name[0]
-    t = {"uid":uid,"event_id":ID}
-    g.conn.execute(text(
+#加判断，uid是否已经在数据库中了
+    t3 = {"event_id":ID}
+    cursor=g.conn.execute(text(
         """
-            insert into Attends(uid,eid)
-            values(:uid,:event_id)
+            select uid
+            from Attends
+            where eid=:event_id
             
         """
-    ),t)
+    ),t3)
+    names = []
+    for result in cursor:
+        names.append(result['uid']) 
+    if uid in names:
+        return render_template('dup.html')
 
-    return view_event(ID)
+    else:
+        t = {"uid":uid,"event_id":ID}
+        g.conn.execute(text(
+            """
+                insert into Attends(uid,eid)
+                values(:uid,:event_id)
+                
+            """
+        ),t)
+
+        return view_event(ID)
 
 @app.route('/event_comment/<ID>',methods=['POST'])
 @flask_login.login_required

@@ -132,7 +132,6 @@ def login():
             logger.debug("login post method")
             t = {"username": request.form['username'], "password" : request.form['password']}
 
-
             cursor = g.conn.execute(text(
                 """
                     select count(*)
@@ -206,8 +205,34 @@ def do_post():
         return render_template('date_wrong.html')
     
     elif res==1:
+        cursor1 = g.conn.execute(text(
+            """
+                select name from Interest
+
+            """
+        ))
+        interest_name = []
+        for result in cursor1:
+            interest_name.append(result['name'])
+
+        cursor2 = g.conn.execute(text(
+            """
+                select address from Venue
+
+            """
+        ))
+        addresses = []
+        for result in cursor2:
+            addresses.append(result['address'])
+
+        if request.form['tag'] not in interest_name:
+            return render_template('tag_wrong.html')
+        if request.form['location'] not in addresses:
+            return render_template('address_wrong.html')
+
 
         t1 = {"event_name": request.form['eventname'],"event_date" : request.form['eventdate'], "description" : request.form['description'], "tag": request.form['tag']}
+
         cursor = g.conn.execute(text(
             """
                 insert into  Event(event_name, event_date, description,tag)
